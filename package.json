@@ -1,5 +1,5 @@
 {
-    "private": true,
+    "private": false,
     "displayName": "Ambient Weather Temperature Sensor",
     "name": "homebridge-http-ambient-weather-temperature-sensor",
     "version": "0.0.1",
