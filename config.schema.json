@@ -1,16 +1,22 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
-  "pluginType": "platform",
-  "singular": true,
-  "schema": {
-    "type": "object",
-    "properties": {
-      "name": {
-        "title": "Name",
-        "type": "string",
-        "required": true,
-        "default": "Example Dynamic Platform"
-      }
+    "pluginAlias": "HomebridgeAmbientWeatherTemperatureSensor",
+    "pluginType": "platform",
+    "singular": true,
+    "schema": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "description": "The name of the platform",
+                "type": "string",
+                "default": "Example Platform",
+                "required": true
+            },
+            "endpointUrl": {
+                "description": "The URL of the endpoint to fetch data from",
+                "type": "string",
+                "title": "Endpoint URL",
+                "required": true
+            }
+        }
     }
-  }
 }

@@ -1,3 +1,5 @@
+import axios, { AxiosResponse } from 'axios';
+
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
 
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
@@ -15,12 +17,16 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
   // this is used to track restored cached accessories
   public readonly accessories: PlatformAccessory[] = [];
 
+  private readonly endpointUrl: string;
+
   constructor(
     public readonly log: Logger,
     public readonly config: PlatformConfig,
     public readonly api: API,
   ) {
     this.log.debug('Finished initializing platform:', this.config.name);
+
+    this.endpointUrl = this.config.endpointUrl;
 
     // When this event is fired it means Homebridge has restored all cached accessories from disk.
     // Dynamic Platform plugins should only register new accessories after this event was fired,
@@ -111,6 +117,24 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
         // link the accessory to your platform
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
       }
+    }
+  }
+
+  async fetchData() {
+    try {
+      const response: AxiosResponse = await axios.get(this.endpointUrl);
+      const data = response.data[0].lastData;
+      const temperature = data.temp1f;
+      const humidity = data.humidity1;
+      const feelsLike = data.feelsLike1;
+
+      return {
+        temperature,
+        humidity,
+        feelsLike,
+      };
+    } catch (error) {
+      this.log.error(`Error fetching data: ${error}`);
     }
   }
 }
