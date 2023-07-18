@@ -1,4 +1,4 @@
-import { PlatformAccessory } from 'homebridge';
+import { CharacteristicGetCallback, PlatformAccessory } from 'homebridge';
 
 import { ExampleHomebridgePlatform } from './platform';
 
@@ -30,7 +30,7 @@ export class ExamplePlatformAccessory {
       .on('get', this.handleHumidityGet.bind(this));
   }
 
-  async handleTemperatureGet(callback: any) {
+  async handleTemperatureGet(callback: CharacteristicGetCallback) {
     // Fetch data and return the temperature
     const data = await this.platform.fetchData();
     if (data) {
@@ -40,7 +40,7 @@ export class ExamplePlatformAccessory {
     }
   }
 
-  async handleHumidityGet(callback: any) {
+  async handleHumidityGet(callback: CharacteristicGetCallback) {
     // Fetch data and return the humidity
     const data = await this.platform.fetchData();
     if (data) {
