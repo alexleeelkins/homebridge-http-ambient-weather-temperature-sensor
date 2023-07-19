@@ -5,6 +5,15 @@ import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, 
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { ExamplePlatformAccessory } from './platformAccessory';
 
+interface Cache {
+  data: {
+    temperature: number;
+    humidity: number;
+    feelsLike: null;
+  } | null;
+  timestamp: number;
+}
+
 /**
  * HomebridgePlatform
  * This class is the main constructor for your plugin, this is where you should
@@ -18,6 +27,13 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
   public readonly accessories: PlatformAccessory[] = [];
 
   private readonly endpointUrl: string;
+
+
+
+  private cache: Cache = {
+    data: null,
+    timestamp: 0,
+  };
 
   constructor(
     public readonly log: Logger,
@@ -121,6 +137,10 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
   }
 
   async fetchData() {
+    if (this.cache.data && (Date.now() - this.cache.timestamp) < 3000) {
+      return this.cache.data;
+    }
+
     try {
       const response: AxiosResponse = await axios.get(this.endpointUrl);
       const data = response.data[0].lastData;
@@ -128,11 +148,12 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
       const humidity = data.humidity1;
       const feelsLike = data.feelsLike1;
 
-      return {
-        temperature,
-        humidity,
-        feelsLike,
+      this.cache = {
+        data: { temperature, humidity, feelsLike },
+        timestamp: Date.now(),
       };
+
+      return this.cache.data;
     } catch (error) {
       this.log.error(`Error fetching data: ${error}`);
     }
