@@ -23,11 +23,6 @@ export class ExamplePlatformAccessory {
       || this.accessory.addService(this.platform.Service.TemperatureSensor);
     temperatureService.getCharacteristic(this.platform.Characteristic.CurrentTemperature)
       .on('get', this.handleTemperatureGet.bind(this));
-
-    const humidityService = this.accessory.getService(this.platform.Service.HumiditySensor)
-      || this.accessory.addService(this.platform.Service.HumiditySensor);
-    humidityService.getCharacteristic(this.platform.Characteristic.CurrentRelativeHumidity)
-      .on('get', this.handleHumidityGet.bind(this));
   }
 
   async handleTemperatureGet(callback: CharacteristicGetCallback) {
@@ -35,16 +30,6 @@ export class ExamplePlatformAccessory {
     const data = await this.platform.fetchData();
     if (data) {
       callback(null, data.temperature);
-    } else {
-      callback(new Error('Could not fetch data'));
-    }
-  }
-
-  async handleHumidityGet(callback: CharacteristicGetCallback) {
-    // Fetch data and return the humidity
-    const data = await this.platform.fetchData();
-    if (data) {
-      callback(null, data.humidity);
     } else {
       callback(new Error('Could not fetch data'));
     }

@@ -138,6 +138,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
 
   async fetchData() {
     if (this.cache.data && (Date.now() - this.cache.timestamp) < 3000) {
+      this.log.info('Returning cached data');
       return this.cache.data;
     }
 
@@ -152,6 +153,8 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
         data: { temperature, humidity, feelsLike },
         timestamp: Date.now(),
       };
+
+      this.log.info('Returning live data');
 
       return this.cache.data;
     } catch (error) {
