@@ -28,12 +28,8 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
 
   private readonly endpointUrl: string;
 
-
-
-  private cache: Cache = {
-    data: null,
-    timestamp: 0,
-  };
+  private cache: Cache = { data: null, timestamp: 0 };
+  private isFetching = false;
 
   constructor(
     public readonly log: Logger,
@@ -137,10 +133,16 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
   }
 
   async fetchData() {
-    if (this.cache.data && (Date.now() - this.cache.timestamp) < 3000) {
+    if (this.cache.data && (Date.now() - this.cache.timestamp) < 2000) {
       this.log.info('Returning cached data');
       return this.cache.data;
     }
+
+    while (this.isFetching) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    this.isFetching = true;
 
     try {
       const response: AxiosResponse = await axios.get(this.endpointUrl);
@@ -155,10 +157,12 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
       };
 
       this.log.info('Returning live data');
-
-      return this.cache.data;
     } catch (error) {
       this.log.error(`Error fetching data: ${error}`);
+    } finally {
+      this.isFetching = false;
     }
+
+    return this.cache.data;
   }
 }
