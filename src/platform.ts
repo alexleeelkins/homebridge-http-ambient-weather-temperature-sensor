@@ -9,7 +9,7 @@ interface Cache {
   data: {
     temperature: number;
     humidity: number;
-    feelsLike: null;
+    feelsLike: number;
   } | null;
   timestamp: number;
 }
@@ -75,11 +75,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
     const exampleDevices = [
       {
         exampleUniqueId: 'ABCD',
-        exampleDisplayName: 'Bedroom',
-      },
-      {
-        exampleUniqueId: 'EFGH',
-        exampleDisplayName: 'Kitchen',
+        exampleDisplayName: 'Temperature Sensor 1',
       },
     ];
 
@@ -134,7 +130,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
 
   async fetchData() {
     if (this.cache.data && (Date.now() - this.cache.timestamp) < 2000) {
-      this.log.info('Returning cached data');
+      this.log.debug('Returning cached data');
       return this.cache.data;
     }
 
@@ -147,16 +143,16 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
     try {
       const response: AxiosResponse = await axios.get(this.endpointUrl);
       const data = response.data[0].lastData;
-      const temperature = data.temp1f;
+      const temperature = (data.temp1f - 32) / 1.8;
       const humidity = data.humidity1;
-      const feelsLike = data.feelsLike1;
+      const feelsLike = (data.feelsLike1 - 32) / 1.8;
 
       this.cache = {
         data: { temperature, humidity, feelsLike },
         timestamp: Date.now(),
       };
 
-      this.log.info('Returning live data');
+      this.log.debug('Returning live data');
     } catch (error) {
       this.log.error(`Error fetching data: ${error}`);
     } finally {
