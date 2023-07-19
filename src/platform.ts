@@ -129,7 +129,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
   }
 
   async fetchData() {
-    if (this.cache.data && (Date.now() - this.cache.timestamp) < 2000) {
+    if (this.cache.data && (Date.now() - this.cache.timestamp) < 10000) {
       this.log.debug('Returning cached data');
       return this.cache.data;
     }
